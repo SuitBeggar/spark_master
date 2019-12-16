@@ -1,24 +1,21 @@
-package streaming.kafka
-
-import java.util
-
-import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
+package sparkstreaming.kafka
 import org.apache.spark.SparkConf
 import org.apache.spark.storage.StorageLevel
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
 import org.apache.spark.streaming.kafka.KafkaUtils
-import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 import scala.collection.mutable.ArrayBuffer
-
-/**SparkStreaming½ÓÊÕkafkaÊý¾Ý£¨±»¶¯Ä£Ê½£©Receiver
-  * Created by fangyitao on 2019/11/19.
-  */
-object KafkaSparkStreaming {
-
+/**
+ * @description:
+ * @Author:bella
+ * @Date:2019/12/1623:18
+ * @Version:
+ **/
+object KafkaSparkStreamingKafka {
   def main(args: Array[String]): Unit = {
 
-    val conf = new SparkConf().setAppName("KafkaSparkStreaming")
+    val conf = new SparkConf().setAppName("KafkaSparkStreamingKafka")
 
     val scc = new StreamingContext(conf,Seconds(10))
 
@@ -32,7 +29,7 @@ object KafkaSparkStreaming {
 
     //val lines = scc.socketTextStream(args(0),args(1).toInt,StorageLevel.MEMORY_AND_DISK_SER)
 
-    //Í¨¹ýReceiver·½Ê½½ÓÊÕkafkaµÄÊý¾Ý£¨±»¶¯½ÓÊÕ£©
+    //é€šè¿‡Receiveræ–¹å¼æŽ¥æ”¶kafkaçš„æ•°æ®ï¼ˆè¢«åŠ¨æŽ¥æ”¶ï¼‰
     val topicAndLines:ReceiverInputDStream[(String,String)] = KafkaUtils.createStream(scc,zkQuorum,group,Map(topic -> 1),StorageLevel.MEMORY_AND_DISK_SER)
 
     val lines : DStream[String] = topicAndLines.map(x => x._2)
@@ -45,6 +42,8 @@ object KafkaSparkStreaming {
       rdd.take(count+1).take(count).foreach(x => {
         arry += x+ "-----read"
       })
+
+      KafkaProducerSpark.ProducerSender(arry)
       arry.clear()
     })
 

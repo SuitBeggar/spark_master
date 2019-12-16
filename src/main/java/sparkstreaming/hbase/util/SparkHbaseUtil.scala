@@ -1,57 +1,57 @@
-package streaming.hbase.util
+package sparkstreaming.hbase.util
 
 import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.hbase.{HBaseConfiguration, HColumnDescriptor, HTableDescriptor, TableName}
 import org.apache.hadoop.hbase.client._
 import org.apache.hadoop.hbase.util.Bytes
-
-import scala.collection.mutable.ArrayBuffer
+import org.apache.hadoop.hbase.{HBaseConfiguration, HColumnDescriptor, HTableDescriptor, TableName}
 
 /**
-  * Created by fangyitao on 2019/11/20.
-  */
+ * @description:
+ * @Author:bella
+ * @Date:2019/12/1623:09
+ * @Version:
+ **/
 object SparkHbaseUtil {
+  private val config: Configuration = HBaseConfiguration.create()   // å°è£…hbaseçš„å‚æ•°
 
-  private val config: Configuration = HBaseConfiguration.create()   // ·â×°hbaseµÄ²ÎÊı
+  private val conn: Connection = ConnectionFactory.createConnection(config)   // æ„å»ºhbaseçš„è¿æ¥æ“ä½œ
 
-  private val conn: Connection = ConnectionFactory.createConnection(config)   // ¹¹½¨hbaseµÄÁ¬½Ó²Ù×÷
-
-  private val admin: Admin = conn.getAdmin    // »ñÈ¡hbaseµÄ¿Í»§¶Ë²Ù×÷
+  private val admin: Admin = conn.getAdmin    // è·å–hbaseçš„å®¢æˆ·ç«¯æ“ä½œ
 
 
   /**
-    * ´´½¨±í
-    * @param tableNameStr
-    * @param columnFamily
-    * @return
-    */
+   * åˆ›å»ºè¡¨
+   * @param tableNameStr
+   * @param columnFamily
+   * @return
+   */
   def createTable(tableNameStr : String,columnFamily : String): Table ={
-      val tableName : TableName = TableName.valueOf(tableNameStr)
+    val tableName : TableName = TableName.valueOf(tableNameStr)
 
-      // ¹¹½¨±íµÄÃèÊöÆ÷
-      val hTableDescriptor = new HTableDescriptor(tableName)
+    // æ„å»ºè¡¨çš„æè¿°å™¨
+    val hTableDescriptor = new HTableDescriptor(tableName)
 
-      // ¹¹½¨ÁĞ×åµÄÃèÊöÆ÷
-      val hColumnDescriptor = new HColumnDescriptor(columnFamily)
+    // æ„å»ºåˆ—æ—çš„æè¿°å™¨
+    val hColumnDescriptor = new HColumnDescriptor(columnFamily)
 
-      hTableDescriptor.addFamily(hColumnDescriptor)
+    hTableDescriptor.addFamily(hColumnDescriptor)
 
-      // Èç¹û±í²»´æÔÚÔò´´½¨±í
-      if (!admin.tableExists(tableName)) {
-        admin.createTable(hTableDescriptor)
-      }
+    // å¦‚æœè¡¨ä¸å­˜åœ¨åˆ™åˆ›å»ºè¡¨
+    if (!admin.tableExists(tableName)) {
+      admin.createTable(hTableDescriptor)
+    }
 
-      conn.getTable(tableName)
+    conn.getTable(tableName)
 
   }
 
   /**
-    * ¸ù¾İrowkey,ÁĞÃû²éÑ¯Êı¾İ
-    * @param rowkey rowkey
-    * @param columnFamily ÁĞİıÃû
-    * @param column ÁĞÃû
-    * @return Êı¾İ
-    */
+   * æ ¹æ®rowkey,åˆ—åæŸ¥è¯¢æ•°æ®
+   * @param rowkey rowkey
+   * @param columnFamily åˆ—è”Ÿå
+   * @param column åˆ—å
+   * @return æ•°æ®
+   */
   def getData(tableNameStr: String, rowkey: String, columnFamily: String, column: String): String = {
 
     val table: Table = createTable(tableNameStr, columnFamily)
@@ -76,13 +76,13 @@ object SparkHbaseUtil {
   }
 
   /**
-    * ÅúÁ¿»ñÈ¡ÁĞµÄÊı¾İ
-    * @param tableNameStr ±íÃû
-    * @param rowkey rowkey
-    * @param columnFamily ÁĞİı
-    * @param columnList ÁĞµÄÃû×ÖÁĞ±í
-    * @return
-    */
+   * æ‰¹é‡è·å–åˆ—çš„æ•°æ®
+   * @param tableNameStr è¡¨å
+   * @param rowkey rowkey
+   * @param columnFamily åˆ—è”Ÿ
+   * @param columnList åˆ—çš„åå­—åˆ—è¡¨
+   * @return
+   */
   def getData(tableNameStr: String, rowkey: String, columnFamily: String, columnList:List[String]) = {
     val table: Table = createTable(tableNameStr, columnFamily)
     var tmp = ""
@@ -94,15 +94,15 @@ object SparkHbaseUtil {
       val valueMap = collection.mutable.Map[String, String]()
 
       //columnList.map()
-//      columnList.map(col =>  val values: Array[Byte] = result.getValue(Bytes.toBytes(columnFamily), Bytes.toBytes(col))
-//
-//          if (values != null && values.size > 0) {
-//            col -> Bytes.toString(values)
-//          }
-//          else {
-//            ""->""
-//          }
-//      ).filter(_._1 != "").toMap
+      //      columnList.map(col =>  val values: Array[Byte] = result.getValue(Bytes.toBytes(columnFamily), Bytes.toBytes(col))
+      //
+      //          if (values != null && values.size > 0) {
+      //            col -> Bytes.toString(values)
+      //          }
+      //          else {
+      //            ""->""
+      //          }
+      //      ).filter(_._1 != "").toMap
     } catch {
       case e: Exception =>
         e.printStackTrace()
@@ -113,15 +113,15 @@ object SparkHbaseUtil {
   }
 
   /**
-    * ²åÈë/¸üĞÂÒ»ÌõÊı¾İ
-    * @param rowKey rowkey
-    * @param columnFamily ÁĞİı
-    * @param column ÁĞÃû
-    * @param data Êı¾İ
-    */
+   * æ’å…¥/æ›´æ–°ä¸€æ¡æ•°æ®
+   * @param rowKey rowkey
+   * @param columnFamily åˆ—è”Ÿ
+   * @param column åˆ—å
+   * @param data æ•°æ®
+   */
   def putData(tableNameStr: String, rowKey: String, columnFamily: String, column: String, data: String) = {
 
-    val table: Table = init(tableNameStr, columnFamily)
+    val table: Table = createTable(tableNameStr, columnFamily)
 
     try {
       val put: Put = new Put(Bytes.toBytes(rowKey))
@@ -135,13 +135,13 @@ object SparkHbaseUtil {
   }
 
   /**
-    * Ê¹ÓÃMap·â×°Êı¾İ£¬²åÈë/¸üĞÂÒ»ÅúÊı¾İ
-    * @param rowKey rowkey
-    * @param columnFamily ÁĞİı
-    * @param mapData key:ÁĞÃû£¬value£ºÁĞÖµ
-    */
+   * ä½¿ç”¨Mapå°è£…æ•°æ®ï¼Œæ’å…¥/æ›´æ–°ä¸€æ‰¹æ•°æ®
+   * @param rowKey rowkey
+   * @param columnFamily åˆ—è”Ÿ
+   * @param mapData key:åˆ—åï¼Œvalueï¼šåˆ—å€¼
+   */
   def putMapData(tableNameStr: String, rowKey: String, columnFamily: String, mapData: Map[String, String]) = {
-    val table: Table = init(tableNameStr, columnFamily)
+    val table: Table = createTable(tableNameStr, columnFamily)
     try {
       val put: Put = new Put(Bytes.toBytes(rowKey))
       if (mapData.size > 0) {
@@ -158,21 +158,21 @@ object SparkHbaseUtil {
   }
 
   /**
-    * ¸ù¾İrowkeyÉ¾³ıÒ»ÌõÊı¾İ
-    *
-    * @param tableNameStr ±íÃû
-    * @param rowkey rowkey
-    */
+   * æ ¹æ®rowkeyåˆ é™¤ä¸€æ¡æ•°æ®
+   *
+   * @param tableNameStr è¡¨å
+   * @param rowkey rowkey
+   */
   def deleteData(tableNameStr:String, rowkey:String, columnFamily:String) = {
     val tableName: TableName = TableName.valueOf(tableNameStr)
 
-    // ¹¹½¨±íµÄÃèÊöÆ÷
+    // æ„å»ºè¡¨çš„æè¿°å™¨
     val hTableDescriptor = new HTableDescriptor(tableName)
-    // ¹¹½¨ÁĞ×åµÄÃèÊöÆ÷
+    // æ„å»ºåˆ—æ—çš„æè¿°å™¨
     val hColumnDescriptor = new HColumnDescriptor(columnFamily)
 
     hTableDescriptor.addFamily(hColumnDescriptor)
-    // Èç¹û±í²»´æÔÚÔò´´½¨±í
+    // å¦‚æœè¡¨ä¸å­˜åœ¨åˆ™åˆ›å»ºè¡¨
     if (!admin.tableExists(tableName)) {
       admin.createTable(hTableDescriptor)
     }
@@ -190,5 +190,4 @@ object SparkHbaseUtil {
       table.close()
     }
   }
-
 }

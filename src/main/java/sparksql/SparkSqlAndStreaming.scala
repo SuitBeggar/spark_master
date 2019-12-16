@@ -16,7 +16,7 @@ object SparkSqlAndStreaming {
 
       val conf = new  SparkConf().setAppName("SparkSqlAndStreaming")
 
-      val sc = new SparkContext(sc)
+      val sc = new SparkContext(conf)
 
       val streaming = new StreamingContext(sc,Seconds(10))
 

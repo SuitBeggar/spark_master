@@ -1,17 +1,17 @@
-package streaming.kafka
-
+package sparkstreaming.kafka
 import java.io.InputStream
 
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.dstream.{DStream, InputDStream}
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-
-/**SparkStreaming½ÓÊÕkafkaÊý¾Ý£¨Ö÷¶¯Ä£Ê½£©direct
-  * Created by fangyitao on 2019/11/20.
-  */
+/**SparkStreamingæŽ¥æ”¶kafkaæ•°æ®ï¼ˆä¸»åŠ¨æ¨¡å¼ï¼‰direct
+ * @description:
+ * @Author:bella
+ * @Date:2019/12/1623:18
+ * @Version:
+ **/
 object KafkaSparkStreamingDirect {
-
   def main(args: Array[String]): Unit = {
 
     val conf = new SparkConf().setAppName("KafkaSparkStreamingDirect")
@@ -24,14 +24,15 @@ object KafkaSparkStreamingDirect {
 
     val group = "group_1"
 
-    //¿É½ÓÊÕ¶à¸ötopic£¨Ê¹ÓÃ¶ººÅ·Ö¸ô£©
+    //å¯æŽ¥æ”¶å¤šä¸ªtopicï¼ˆä½¿ç”¨é€—å·åˆ†éš”ï¼‰
     val topic = "topic_test";
 
     val topicSet = topic.split(",").toSet
 
     val kafkaParams = Map[String, String]("metadata.broker.list" -> zkQuorum)
 
-    val message : InputDStream[(String,String)]= KafkaUtils.createDirectStream(scc, kafkaParams,topicSet)
+    //val message : InputDStream[(String,String)]= KafkaUtils.createDirectStream(scc, kafkaParams,topicSet)
+    val message = KafkaUtils.createDirectStream(scc, kafkaParams,topicSet)
 
     val lines : DStream[String] = message.map(x => x._2)
 

@@ -10,8 +10,10 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <scala.version>2.10.5</scala.version>
-        <spark.version>1.6.0</spark.version>
+       <!-- <scala.version>2.10.5</scala.version>
+        <spark.version>1.6.0</spark.version>-->
+        <scala.version>2.11.4</scala.version>
+        <spark.version>2.0.2</spark.version>
         <hadoop.version>2.6.5</hadoop.version>
         <hive.version>1.2.2</hive.version>
         <hbase.version>1.2.2</hbase.version>
@@ -55,12 +57,16 @@
             <version>${spark.version}</version>
         </dependency>
 
-        <dependency><!-- Spark Streaming Kafka -->
+        <!--<dependency>&lt;!&ndash; Spark Streaming Kafka &ndash;&gt;
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-streaming-kafka_2.10</artifactId>
             <version>${spark.version}</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka-assembly_2.11</artifactId>
+            <version>1.6.3</version>
         </dependency>
-
         <!--Spark sql -->
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -155,5 +161,56 @@
         </dependency>
 
     </dependencies>
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
 
+
+        <plugins>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- MAVEN 编译使用的JDK版本 -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.10</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+
+    </build>
 </project>
