@@ -1,3 +1,4 @@
+/*
 package java;
 
 import org.apache.spark.SparkConf;
@@ -14,12 +15,14 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+*/
 /**
  * @description:
  * @Author:bella
  * @Date:2019/9/2523:05
  * @Version:
- **/
+ **//*
+
 public class wordcountJava {
     public static void main(String[] args) {
 
@@ -59,3 +62,4 @@ public class wordcountJava {
         rdd4.saveAsTextFile("hdfs://master:9000/input/2java.data");
     }
 }
+*/

@@ -10,13 +10,13 @@ object SparkSqlJson {
 
   def main(args: Array[String]): Unit = {
 
-    val conf  = new SparkConf().setAppName("SparkSqlJson")
+    val conf  = new SparkConf().setAppName("SparkSqlJson").setMaster("local[2]")
 
     val sc = new SparkContext(conf)
 
     val sqlContext = new SQLContext(sc)
 
-    val personInfo : DataFrame = sqlContext.read.json("hdfs://master:9000/person_info.json")
+    val personInfo : DataFrame = sqlContext.read.json("hdfs://master:9000/sparksql/person_info.json")
 
     personInfo.registerTempTable("personInfo")
 
